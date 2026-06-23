@@ -8,6 +8,8 @@ export interface Toilet {
   price: number | null;
   is_accessible: boolean;
   has_changing_table: boolean;
+  comment: string | null;
+  comment_created_at: string | null;
   is_approved: boolean;
   opening_hours: any; // Fürs Erste als any, um es simpel zu halten
   created_at: string;

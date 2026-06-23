@@ -11,7 +11,8 @@ interface ListViewProps {
   toilets: Toilet[];
   favorites: string[];
   onToggleFavorite: (id: string) => void;
-  mapCenter: [number, number]; // NEU
+  onReportToilet: (id: string, comment: string) => void;
+  mapCenter: [number, number];
 }
 
 function getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
@@ -32,12 +33,32 @@ function getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
   return Math.round(R * c);
 }
 
+function getReportInfo(createdAt: string | null) {
+  if (!createdAt) return null;
+
+  const ageMs = Date.now() - new Date(createdAt).getTime();
+  const hoursAgo = Math.floor(ageMs / (60 * 60 * 1000));
+  const hoursLeft = Math.max(0, 12 - hoursAgo);
+
+  return { hoursAgo, hoursLeft };
+}
+
 export function ListView({
   toilets,
   favorites,
   onToggleFavorite,
+  onReportToilet,
   mapCenter,
 }: ListViewProps) {
+  const handleReportClick = (toiletId: string) => {
+    const text = window.prompt(
+      "Was möchtest du melden? (z.B. 'Geschlossen', 'Aktuell extrem dreckig')",
+    );
+    if (text && text.trim()) {
+      onReportToilet(toiletId, text.trim());
+    }
+  };
+
   return (
     <div className="space-y-3">
       <div className="flex justify-between items-center mb-4 px-1">
@@ -59,7 +80,6 @@ export function ListView({
         </div>
       ) : (
         toilets.map((toilet) => {
-          // GEÄNDERT: Berechnet die Entfernung basierend auf den aktuellen Map-Koordinaten!
           const distance = getDistance(
             mapCenter[0],
             mapCenter[1],
@@ -68,6 +88,9 @@ export function ListView({
           );
 
           const isFavorite = favorites.includes(toilet.id);
+          const reportInfo = toilet.comment
+            ? getReportInfo(toilet.comment_created_at)
+            : null;
 
           return (
             <div
@@ -90,6 +113,18 @@ export function ListView({
                 </span>
               </div>
 
+              {/* Geofencing-Warnmeldung, im Stil des Mockups */}
+              {toilet.comment && reportInfo && (
+                <div className="bg-amber-50 border border-amber-200/60 rounded-xl p-2.5 flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <p className="text-[11px] text-amber-800 leading-tight">
+                    Meldung vor {reportInfo.hoursAgo} Std:{" "}
+                    <span className="font-semibold">{toilet.comment}</span>.
+                    Automatische Löschung in {reportInfo.hoursLeft} Std.
+                  </p>
+                </div>
+              )}
+
               <div className="flex items-center justify-between border-t border-gray-50 pt-3">
                 <div className="flex gap-2 text-gray-400">
                   {toilet.is_accessible && (
@@ -111,13 +146,6 @@ export function ListView({
                 </div>
               </div>
 
-              {toilet.comment && (
-                <div className="bg-amber-50 border border-amber-100 rounded-xl p-2.5 flex items-start gap-2 text-amber-800 text-xs">
-                  <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                  <span>{toilet.comment}</span>
-                </div>
-              )}
-
               <div className="flex gap-2 mt-1">
                 <a
                   href={`https://www.google.com/maps/search/?api=1&query=${toilet.latitude},${toilet.longitude}`}
@@ -127,6 +155,14 @@ export function ListView({
                 >
                   <Navigation className="w-3.5 h-3.5" /> Google Maps
                 </a>
+
+                <button
+                  onClick={() => handleReportClick(toilet.id)}
+                  title="Etwas an dieser Toilette melden"
+                  className="p-2 rounded-xl transition border flex items-center justify-center bg-amber-50 border-amber-100 text-amber-600 hover:bg-amber-100"
+                >
+                  <AlertTriangle className="w-4 h-4" />
+                </button>
 
                 <button
                   onClick={() => onToggleFavorite(toilet.id)}

@@ -10,12 +10,24 @@ import { ProfileView } from "./components/ProfileView";
 import { AddToiletModal } from "./components/AddToiletModal";
 
 const COVERAGE_RADIUS_DEG = 0.15; // ca. 15 km um den Suchpunkt — deckt ganze Bezirke ab
+const TWELVE_HOURS_MS = 12 * 60 * 60 * 1000;
 
 function isNearby(toilet: Toilet, lat: number, lon: number): boolean {
   return (
     Math.abs(toilet.latitude - lat) < COVERAGE_RADIUS_DEG &&
     Math.abs(toilet.longitude - lon) < COVERAGE_RADIUS_DEG
   );
+}
+
+// Blendet Kommentare aus, die älter als 12 Stunden sind — ohne sie aus der DB zu löschen
+function withEffectiveComment(toilet: Toilet): Toilet {
+  if (!toilet.comment || !toilet.comment_created_at) return toilet;
+
+  const ageMs = Date.now() - new Date(toilet.comment_created_at).getTime();
+  if (ageMs > TWELVE_HOURS_MS) {
+    return { ...toilet, comment: null };
+  }
+  return toilet;
 }
 
 async function fetchOverpassToilets(
@@ -65,6 +77,7 @@ async function fetchOverpassToilets(
       is_accessible: el.tags?.wheelchair === "yes",
       has_changing_table: el.tags?.changing_table === "yes",
       comment: null,
+      comment_created_at: null,
       is_approved: true,
     })) as Toilet[];
   } catch (err) {
@@ -191,8 +204,35 @@ function App() {
     fillGapIfNeeded();
   }, [mapCenter]);
 
+  // Meldung für eine bestehende Toilette speichern (Supabase + lokaler State)
+  async function reportToilet(id: string, commentText: string) {
+    const now = new Date().toISOString();
+
+    const { error } = await supabase
+      .from("toilets")
+      .update({ comment: commentText, comment_created_at: now })
+      .eq("id", id);
+
+    if (error) {
+      console.error("Fehler beim Speichern der Meldung:", error.message);
+      alert("Meldung konnte nicht gespeichert werden.");
+      return;
+    }
+
+    setToilets((prev) =>
+      prev.map((t) =>
+        t.id === id
+          ? { ...t, comment: commentText, comment_created_at: now }
+          : t,
+      ),
+    );
+  }
+
+  // Kommentare älter als 12h werden hier zentral ausgeblendet
+  const visibleToilets = toilets.map(withEffectiveComment);
+
   // Filter-Pillen (Umsonst / Barrierefrei / Wickeltisch) — gilt für Karte UND Liste
-  const amenityFilteredToilets = toilets.filter((toilet) => {
+  const amenityFilteredToilets = visibleToilets.filter((toilet) => {
     if (filters.free && !toilet.is_free) return false;
     if (filters.accessible && !toilet.is_accessible) return false;
     if (filters.changingTable && !toilet.has_changing_table) return false;
@@ -241,15 +281,17 @@ function App() {
               toilets={listToilets}
               favorites={favorites}
               onToggleFavorite={toggleFavorite}
+              onReportToilet={reportToilet}
               mapCenter={mapCenter}
             />
           )}
 
           {activeTab === "favoriten" && (
             <ListView
-              toilets={toilets.filter((t) => favorites.includes(t.id))}
+              toilets={visibleToilets.filter((t) => favorites.includes(t.id))}
               favorites={favorites}
               onToggleFavorite={toggleFavorite}
+              onReportToilet={reportToilet}
               mapCenter={mapCenter}
             />
           )}

@@ -12,7 +12,6 @@ export function BottomNav({
   onPlusClick,
 }: BottomNavProps) {
   return (
-    // GEÄNDERT: Klassen angepasst für das schwebende Insel-Design aus der index.html
     <div className="absolute bottom-5 left-4 right-4 bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-gray-100 px-4 py-3 flex justify-between items-center z-[9999]">
       {/* Karte */}
       <button
