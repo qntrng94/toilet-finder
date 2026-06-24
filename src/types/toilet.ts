@@ -11,6 +11,6 @@ export interface Toilet {
   comment: string | null;
   comment_created_at: string | null;
   is_approved: boolean;
-  opening_hours: any; // Fürs Erste als any, um es simpel zu halten
+  opening_hours: any;
   created_at: string;
 }

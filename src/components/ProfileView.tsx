@@ -3,7 +3,6 @@ import { User, Settings, MapPin, LogOut } from "lucide-react";
 export function ProfileView() {
   return (
     <div className="space-y-4">
-      {/* Profil-Header */}
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100/50 flex flex-col items-center text-center">
         <div className="w-20 h-20 bg-[#4A6B82]/10 rounded-full flex items-center justify-center text-[#4A6B82] mb-3">
           <User className="w-10 h-10" />
@@ -12,9 +11,7 @@ export function ProfileView() {
         <p className="text-xs text-gray-500 mt-0.5">Mitglied seit 2026</p>
       </div>
 
-      {/* Optionen-Block inklusive der Beitrags-Zahl */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100/50 divide-y divide-gray-50 overflow-hidden">
-        {/* Hierhin verschoben: Sauber integriert mit echtem Counter rechts */}
         <div className="px-4 py-3.5 flex items-center justify-between hover:bg-gray-50/50 transition">
           <div className="flex items-center gap-3 text-sm text-gray-700 font-medium">
             <MapPin className="w-4 h-4 text-gray-400" />

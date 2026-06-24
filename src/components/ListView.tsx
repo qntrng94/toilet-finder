@@ -59,6 +59,22 @@ export function ListView({
     }
   };
 
+  const sortedToilets = [...toilets].sort((a, b) => {
+    const distA = getDistance(
+      mapCenter[0],
+      mapCenter[1],
+      a.latitude,
+      a.longitude,
+    );
+    const distB = getDistance(
+      mapCenter[0],
+      mapCenter[1],
+      b.latitude,
+      b.longitude,
+    );
+    return distA - distB;
+  });
+
   return (
     <div className="space-y-3">
       <div className="flex justify-between items-center mb-4 px-1">
@@ -70,7 +86,7 @@ export function ListView({
         </span>
       </div>
 
-      {toilets.length === 0 ? (
+      {sortedToilets.length === 0 ? (
         <div className="text-center py-12 text-gray-400 text-sm bg-white rounded-2xl border border-gray-100/50 p-6">
           📍{" "}
           <span className="font-semibold text-gray-700 block mt-2">
@@ -79,7 +95,7 @@ export function ListView({
           Im ausgewählten Umkreis wurden keine Toiletten gefunden.
         </div>
       ) : (
-        toilets.map((toilet) => {
+        sortedToilets.map((toilet) => {
           const distance = getDistance(
             mapCenter[0],
             mapCenter[1],

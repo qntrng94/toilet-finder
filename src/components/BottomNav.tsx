@@ -13,7 +13,6 @@ export function BottomNav({
 }: BottomNavProps) {
   return (
     <div className="absolute bottom-5 left-4 right-4 bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-gray-100 px-4 py-3 flex justify-between items-center z-[9999]">
-      {/* Karte */}
       <button
         onClick={() => setActiveTab("karte")}
         className={`flex flex-col items-center gap-1 transition ${
@@ -30,7 +29,6 @@ export function BottomNav({
         </span>
       </button>
 
-      {/* Liste */}
       <button
         onClick={() => setActiveTab("liste")}
         className={`flex flex-col items-center gap-1 transition ${
@@ -47,7 +45,6 @@ export function BottomNav({
         </span>
       </button>
 
-      {/* Plus Button (Floating Trigger) */}
       <button
         onClick={onPlusClick}
         className="w-12 h-12 bg-[#4A6B82] hover:bg-[#3D5A6E] text-white rounded-full flex items-center justify-center shadow-md transform -translate-y-2 transition active:scale-95 border-4 border-[#F5F3E9]"
@@ -55,7 +52,6 @@ export function BottomNav({
         <Plus className="w-6 h-6" />
       </button>
 
-      {/* Favoriten */}
       <button
         onClick={() => setActiveTab("favoriten")}
         className={`flex flex-col items-center gap-1 transition ${
@@ -72,7 +68,6 @@ export function BottomNav({
         </span>
       </button>
 
-      {/* Profil */}
       <button
         onClick={() => setActiveTab("profil")}
         className={`flex flex-col items-center gap-1 transition ${

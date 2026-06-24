@@ -34,7 +34,6 @@ export function SearchHeader({
 
   return (
     <div className="absolute top-0 left-0 right-0 z-[1000] p-4 bg-gradient-to-b from-[#F5F3E9] via-[#F5F3E9]/90 to-transparent pb-8">
-      {/* Suchleiste */}
       <div className="flex items-center bg-white rounded-2xl shadow-md px-4 py-3 border border-gray-100">
         <Search className="text-[#4A6B82] w-5 h-5 mr-3" />
         <input
@@ -55,7 +54,6 @@ export function SearchHeader({
         <MapPin className="text-[#4A6B82] w-5 h-5 ml-2 cursor-pointer hover:text-[#3D5A6E] transition" />
       </div>
 
-      {/* Filter-Pillen */}
       <div className="flex gap-2 mt-3 overflow-x-auto pb-1 scrollbar-none">
         <button
           className={`${pillBaseClass} bg-[#4A6B82] text-white hover:bg-[#3D5A6E]`}
